@@ -30,6 +30,7 @@ A demo page deployed using Cloudflare Pages -> [Cloudflare Demo URL](https://tex
 *   **Comment Support:** Allows users to add comments to their calculations using the `#` symbol.  The part after `#` will be treated as a comment and ignored during calculation.
 *   **Responsive Design:** Adapts to different screen sizes using a two-column layout.
 *   **Formatted Output:** Displays numbers in a user-friendly way. Formats the output, displaying percentages if the value is too small.
+*   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
 *   **PWA Support:**  After deployment using Https, it can be installed as a local application through PWA.
 *   **Cloud Provider Pages Deployment:** Supports static deployment on various service providers' pages.
 
@@ -109,6 +110,7 @@ This project is licensed under the [GPL3 License](LICENSE).
 *   **方程求解：** 求解具有单个变量 'x' 的线性方程。
 *   **注释支持：** 允许用户使用 `#` 符号向其计算添加注释。 `#` 后面的部分将被视为注释，并在计算过程中被忽略。
 *   **格式化输出：** 以用户友好的方式显示数字。格式化输出， 除法值显示百分比。
+*   **缓存输入内容：** 缓存用户输入的内容 下次打开网页时进行复原
 *   **PWA支持：** 使用Https部署后可以通过PWA安装到本地应用
 *   **云服务商pages部署：** 支持各种服务商的pages静态部署
 
