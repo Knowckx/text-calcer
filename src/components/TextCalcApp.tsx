@@ -2,36 +2,23 @@ import { evaluate, format, MathType } from 'mathjs';
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from 'react';
 
-
 export function TextCalcApp() {
-    const [lines, setLines] = useState<{ input: string; result: string }>({ input: '', result: '' });
+    // Initialize state with data from localStorage, or default values
+    const [lines, setLines] = useState<{ input: string; result: string }>(() => {
+        const savedInput = localStorage.getItem('calcInput') || '';
+        return {
+            input: savedInput,
+            result: savedInput ? calculateResults(savedInput) : '' // Calculate only if needed
+        };
+    });
 
+
+
+    // Function to calculate results and update state
     const handleInputChange = (value: string) => {
-        const inputLines = value.split('\n');
-        const resultLines = [];
-
-        for (const line of inputLines) {
-            const { lineWithoutComment, comment } = HandleOneLine(line);
-
-            if (lineWithoutComment === "") {
-                resultLines.push(comment);
-                continue
-            }
-
-            // 检查 lineWithoutComment 是否是纯数字
-            if (/^\d+(\.\d+)?$/.test(lineWithoutComment)) {  // 整数或小数
-                resultLines.push(lineWithoutComment);
-                continue;
-            }
-
-            let result = GetLineNoCommentResult(lineWithoutComment);
-            if (comment) { //发生异常的时候 也显示注释
-                result += `    ${comment}`;
-            }
-            resultLines.push(result);
-        }
-
-        setLines({ input: value, result: resultLines.join('\n') });
+        const resText = calculateResults(value)
+        setLines({ input: value, result: resText });
+        localStorage.setItem('calcInput', value);
     };
 
     return (
@@ -62,9 +49,9 @@ function formatEvalResultNumber(evalResult: number, needPercent: boolean): strin
     let res = parseFloat(formatted).toString();
 
     // 太大的值没有必要显示百分比
-    if (needPercent && evalResult< 3) {
+    if (needPercent && evalResult < 3) {
         const temp = format(evalResult * 100 - 100, { notation: 'fixed', precision: 2 })
-        const fix = evalResult > 1 ? "+":""
+        const fix = evalResult > 1 ? "+" : ""
         const percent = fix + parseFloat(temp).toString() + "%";
         res = `${res}(${percent})`;
     }
@@ -90,6 +77,29 @@ function formatEvalResult(evalResult: MathType, needPercent: boolean): string {
     return "";
 }
 
+
+// Function to calculate results
+const calculateResults = (value: string): string => {
+    const inputLines = value.split('\n');
+    const resultLines = [];
+    for (const line of inputLines) {
+        const { lineWithoutComment, comment } = HandleOneLine(line);
+        if (lineWithoutComment === "") {
+            resultLines.push(comment);
+            continue;
+        }
+        if (/^\d+(\.\d+)?$/.test(lineWithoutComment)) {
+            resultLines.push(lineWithoutComment);
+            continue;
+        }
+        let result = GetLineNoCommentResult(lineWithoutComment);
+        if (comment) {
+            result += `    ${comment}`;
+        }
+        resultLines.push(result);
+    }
+    return resultLines.join('\n')
+};
 
 /** 分解成注释和公式两部分 */
 function HandleOneLine(line: string) {
@@ -134,8 +144,6 @@ function GetLineNoCommentResult(inpLine: string) {
 }
 
 
-
-
 /** 输入一个一元一次方程 x表示需要求解的变量 */
 function solveEquation(equation: string): string {
     // 将方程以"="拆分为左右两部分
@@ -178,6 +186,4 @@ function solveEquation(equation: string): string {
     }
     return resultStr;
 }
-
-
 
