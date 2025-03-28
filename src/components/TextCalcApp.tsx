@@ -27,7 +27,7 @@ export function TextCalcApp() {
                 <Textarea
                     value={lines.input}
                     onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="输入公式, 例如: 20*10"
+                    placeholder="Enter formula, for example: 3*10+1"
                     className="w-full min-h-[calc(90vh-1rem)] md:text-2xl font-mono"
                 />
             </div>

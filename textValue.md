@@ -2,7 +2,7 @@
 
 50*10+2 # 这是注释
 
-10/3+41
+2+2^3
 
 2. 一元一次方程求解
 
@@ -22,7 +22,7 @@ x*6 +2 = 20 - x/2
 
 50*10+2 # This is a comment
 
-10/3+41
+2+2^3
 
 2. Solving Linear Equations with One Variable
 
