@@ -102,7 +102,13 @@ This project is licensed under the [GPL3 License](LICENSE).
 
 使用Cloudflare Pages部署的一个示例页面 -> [Cloudflare Demo URL](https://text-calcer.pages.dev/)
 
+
 ![desc](images/demo-cn.png)
+
+### 备用地址
+假如在国内对Cloudflare的访问有问题，可以考虑以下的备用地址:  
+[备用地址1](https://text-calcer.edgeone.app/)
+[备用地址2](https://text-calcer.zone.id/)
 
 ### 功能特性
 
