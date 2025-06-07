@@ -1,6 +1,9 @@
 import { evaluate, format, MathType } from 'mathjs';
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from 'react';
+import { Configs } from '@/Conf';
+
+
 
 export function TextCalcApp() {
     // Initialize state with data from localStorage, or default values
@@ -27,7 +30,7 @@ export function TextCalcApp() {
                 <Textarea
                     value={lines.input}
                     onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Enter formula, for example: 3*10+1"
+                    placeholder={Configs.DefaultTxt}
                     className="w-full min-h-[calc(90vh-1rem)] md:text-2xl font-mono"
                 />
             </div>
@@ -48,12 +51,14 @@ function formatEvalResultNumber(evalResult: number, needPercent: boolean): strin
     const formatted = format(evalResult, { notation: 'fixed', precision: 4 });
     let res = parseFloat(formatted).toString();
 
-    // 太大的值没有必要显示百分比
-    if (needPercent && evalResult < 3) {
-        const temp = format(evalResult * 100 - 100, { notation: 'fixed', precision: 2 })
-        const fix = evalResult > 1 ? "+" : ""
-        const percent = fix + parseFloat(temp).toString() + "%";
-        res = `${res}(${percent})`;
+    // 股票涨跌幅显示优化 假如比例值处在[70%, 130%]时显示具体的百分比
+    if (Configs.ShowNumPercentDetail){  // 通过配置开启或者关闭
+        if (needPercent && evalResult < 1.3 && evalResult > 0.7) {
+            const temp = format(evalResult * 100 - 100, { notation: 'fixed', precision: 2 })
+            const fix = evalResult > 1 ? "+" : ""
+            const percent = fix + parseFloat(temp).toString() + "%";
+            res = `${res}  (${percent})`;
+        }
     }
     return res
 }
@@ -77,9 +82,10 @@ function formatEvalResult(evalResult: MathType, needPercent: boolean): string {
     return "";
 }
 
-
 // Function to calculate results
 const calculateResults = (value: string): string => {
+    value = value.replaceAll('x', '*'); // 乘法符号 "3x3" 等同于 "3*3"
+
     const inputLines = value.split('\n');
     const resultLines = [];
     for (const line of inputLines) {
@@ -119,10 +125,10 @@ function HandleOneLine(line: string) {
 
 function GetLineNoCommentResult(inpLine: string) {
     let result = '';
-    if (inpLine.includes('x') && inpLine.includes('=')) {
+    if (inpLine.includes('a') && inpLine.includes('=')) {
         try { // 尝试解方程
             result = solveEquation(inpLine);
-            result = `x = ${result}`
+            result = `a = ${result}`
         } catch (error) {
             console.log(`error: `, error)
             //如果solveEquation内部出错, 也不影响下面逻辑执行
@@ -153,18 +159,18 @@ function solveEquation(equation: string): string {
     }
     const [left, right] = parts;
 
-    // 定义函数 f(x) = 左边表达式 - 右边表达式
-    const f = (x: number): number => {
+    // 定义函数 f(a) = 左边表达式 - 右边表达式
+    const f = (a: number): number => {
         // 使用 Function 构造器生成计算表达式的函数
-        const leftFunc = new Function("x", "return " + left);
-        const rightFunc = new Function("x", "return " + right);
-        return leftFunc(x) - rightFunc(x);
+        const leftFunc = new Function("a", "return " + left);
+        const rightFunc = new Function("a", "return " + right);
+        return leftFunc(a) - rightFunc(a);
     };
 
     // 计算 f(0) 和 f(1)
     const f0 = f(0);
     const f1 = f(1);
-    const coeff = f1 - f0; // 线性函数 f(x) = f0 + coeff * x
+    const coeff = f1 - f0; // 线性函数 f(a) = f0 + coeff * a
 
     // 如果系数为0，则需要判断是否有无穷多解或无解
     if (coeff === 0) {
@@ -172,7 +178,7 @@ function solveEquation(equation: string): string {
         else return "No solution"; // 无解
     }
 
-    // 求解 f(x) = 0 => x = -f(0) / coeff
+    // 求解 f(a) = 0 => a = -f(0) / coeff
     const result = -f0 / coeff;
     // 如果结果是小数，保留4位小数
     const resultStr = result.toString();

@@ -1,12 +1,12 @@
 1. 文本公式计算器，支持行内注释
 
-50*10+2 # 这是注释
+50x10+2 # 这是注释
 
 2+2^3
 
 2. 一元一次方程求解
 
-x*6 +2 = 20 - x/2
+a*6 +2 = 20 - a/2
 
 3. 显示百分比
 
@@ -26,9 +26,16 @@ x*6 +2 = 20 - x/2
 
 2. Solving Linear Equations with One Variable
 
-x*6 +2 = 20 - x/2
+a*6 +2 = 20 - a/2
 
 3. Display Percentage
 
 Stock opening price 10.54 Current price 10.88 What is the increase?
 10.88/10.54  # Intraday increase +3.23%
+
+
+
+
+
+
+
