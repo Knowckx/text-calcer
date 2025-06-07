@@ -20,7 +20,7 @@ The project is built using React, TypeScript, Vite, pnpm, Tailwind CSS, and Shad
 
 A demo page deployed using Cloudflare Pages -> [Cloudflare Demo URL](https://text-calcer.pages.dev/)
 
-![desc](images/demo-en.png)
+![desc](images/demo-calc.png)
 
 
 ### Features
@@ -104,7 +104,7 @@ This project is licensed under the [GPL3 License](LICENSE).
 使用Cloudflare Pages部署的一个示例页面 -> [Cloudflare Demo URL](https://text-calcer.pages.dev/)
 
 
-![desc](images/demo-cn.png)
+![desc](images/demo-calc.png)
 
 ### 备用地址
 假如在国内对Cloudflare的访问有问题，可以考虑以下的备用地址:  
