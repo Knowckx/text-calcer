@@ -1,29 +1,39 @@
 import { evaluate, format, MathType } from 'mathjs';
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from 'react';
-import { Configs } from '@/Conf';
-
-
+import { Configs } from '@/conf';
+import { Button } from '@/components/ui/button';
+import { Copy, Check } from 'lucide-react';
 
 export function TextCalcApp() {
-    // Initialize state with data from localStorage, or default values
-    const [lines, setLines] = useState<{ input: string; result: string }>(() => {
+    const [lines, setLines] = useState<{ input: string; result: string[] }>(() => {
         const savedInput = localStorage.getItem('calcInput') || '';
         return {
             input: savedInput,
-            result: savedInput ? calculateResults(savedInput) : '' // Calculate only if needed
+            result: savedInput ? calculateResults(savedInput) : []
         };
     });
+    const [copiedLineIndex, setCopiedLineIndex] = useState<number | null>(null);
+    // --- 用于追踪鼠标悬停的行 ---
+    const [hoveredLineIndex, setHoveredLineIndex] = useState<number | null>(null);
 
-
-
-    // Function to calculate results and update state
     const handleInputChange = (value: string) => {
-        const resText = calculateResults(value)
-        setLines({ input: value, result: resText });
+        const resArray = calculateResults(value)
+        setLines({ input: value, result: resArray });
         localStorage.setItem('calcInput', value);
     };
-
+    const handleCopy = (textToCopy: string, index: number) => {
+        if (!textToCopy.trim()) return;
+        const resultPart = textToCopy
+        navigator.clipboard.writeText(resultPart).then(() => {
+            setCopiedLineIndex(index);
+            setTimeout(() => {
+                setCopiedLineIndex(null);
+            }, 2000);
+        }).catch(err => {
+            console.error('无法复制文本: ', err);
+        });
+    };
     return (
         <div className="container mx-auto p-4 grid grid-cols-2 gap-4 ">
             <div className="flex flex-col space-y-2 ">
@@ -31,19 +41,85 @@ export function TextCalcApp() {
                     value={lines.input}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder={Configs.DefaultTxt}
-                    className="w-full min-h-[calc(90vh-1rem)] md:text-2xl font-mono"
+                    // 对齐修正 "leading-8" 与右侧 h-8 对应，确保每行高度一致
+                    className="w-full min-h-[calc(90vh-1rem)] md:text-2xl font-mono leading-8"
                 />
             </div>
+            
             <div className="flex flex-col space-y-2">
-                <Textarea
-                    value={lines.result}
-                    readOnly
-                    className="w-full min-h-[calc(90vh-1rem)]  font-bold  md:text-2xl"
-                />
+                {/* 对齐修正 使用与Textarea相同的 px-3 py-2, 并继承字体和行高样式 */}
+                <div className="w-full min-h-[calc(90vh-1rem)] font-bold md:text-2xl font-mono leading-8 px-3 py-2 border bg-background rounded-md overflow-y-auto">
+                    {lines.result.map((line, index) => (
+                        // 对齐修正 `h-8` 确保此容器高度与 `leading-8` 的行高完全匹配
+                        <div
+                            key={index}
+                            className="group flex justify-between items-center h-8" 
+                        >
+                            {/* 使用 <pre> 保留空格，font-bold 让结果突出 */}
+                            <pre className="font-bold">
+                                {/* --- 使用 span 包裹文本，并根据悬停状态动态应用样式 --- */}
+                                <span className={`transition-colors duration-150 rounded px-1 ${
+                                    hoveredLineIndex === index ? 'bg-muted' : 'bg-transparent'
+                                }`}>
+                                    {/* --- 对齐修正: 处理空行 --- */}
+                                    {/* 如果行为空，渲染一个空格，使其占据一行的高度 */}
+                                    {line || <>&nbsp;</>}
+                                </span>
+                            </pre>
+                            {line.trim() && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleCopy(line, index)}
+                                    // --- 鼠标进入和离开事件，用于更新悬停状态 ---
+                                    onMouseEnter={() => setHoveredLineIndex(index)}
+                                    onMouseLeave={() => setHoveredLineIndex(null)}
+                                >
+                                    {copiedLineIndex === index ? (
+                                        <Check className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <Copy className="h-4 w-4" />
+                                    )}
+                                    <span className="sr-only">复制此行</span>
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
+
+// --- 5. 修改计算函数: 返回 string[] 而不是 string ---
+const calculateResults = (value: string): string[] => { // <-- 返回类型改为 string[]
+
+    const inputLines = value.split('\n');
+    const resultLines = [];
+    for (const line of inputLines) {
+        const { lineWithoutComment, comment } = HandleOneLine(line);
+        if (lineWithoutComment === "") {
+            // 如果只有注释或为空行，也推送，以保持行号对应
+            resultLines.push(comment ? `# ${comment}` : '');
+            continue;
+        }
+        if (/^\d+(\.\d+)?$/.test(lineWithoutComment)) {
+            // 如果是纯数字，直接推入
+            resultLines.push(lineWithoutComment);
+            continue;
+        }
+        let result = GetLineNoCommentResult(lineWithoutComment);
+        if (comment) {
+            result += `    # ${comment}`;
+        }
+        resultLines.push(result);
+    }
+    return resultLines; // <-- 直接返回数组
+};
+
+
+
 
 function formatEvalResultNumber(evalResult: number, needPercent: boolean): string {
     if (Number.isInteger(evalResult)) return evalResult.toString();
@@ -51,13 +127,13 @@ function formatEvalResultNumber(evalResult: number, needPercent: boolean): strin
     const formatted = format(evalResult, { notation: 'fixed', precision: 4 });
     let res = parseFloat(formatted).toString();
 
-    // 股票涨跌幅显示优化 假如比例值处在[70%, 130%]时显示具体的百分比
+    // 股票涨跌幅显示优化 假如比例值处在[70%, 130%]时显示具体的百分比 实际上A股日内涨跌幅是20%以内 30%能满足大部分情况
     if (Configs.ShowNumPercentDetail){  // 通过配置开启或者关闭
         if (needPercent && evalResult < 1.3 && evalResult > 0.7) {
             const temp = format(evalResult * 100 - 100, { notation: 'fixed', precision: 2 })
             const fix = evalResult > 1 ? "+" : ""
             const percent = fix + parseFloat(temp).toString() + "%";
-            res = `${res}  (${percent})`;
+            res = `${res} (${percent})`;
         }
     }
     return res
@@ -82,30 +158,6 @@ function formatEvalResult(evalResult: MathType, needPercent: boolean): string {
     return "";
 }
 
-// Function to calculate results
-const calculateResults = (value: string): string => {
-    value = value.replaceAll('x', '*'); // 乘法符号 "3x3" 等同于 "3*3"
-
-    const inputLines = value.split('\n');
-    const resultLines = [];
-    for (const line of inputLines) {
-        const { lineWithoutComment, comment } = HandleOneLine(line);
-        if (lineWithoutComment === "") {
-            resultLines.push(comment);
-            continue;
-        }
-        if (/^\d+(\.\d+)?$/.test(lineWithoutComment)) {
-            resultLines.push(lineWithoutComment);
-            continue;
-        }
-        let result = GetLineNoCommentResult(lineWithoutComment);
-        if (comment) {
-            result += `    ${comment}`;
-        }
-        resultLines.push(result);
-    }
-    return resultLines.join('\n')
-};
 
 /** 分解成注释和公式两部分 */
 function HandleOneLine(line: string) {
@@ -125,10 +177,13 @@ function HandleOneLine(line: string) {
 
 function GetLineNoCommentResult(inpLine: string) {
     let result = '';
+    // --- 创建一个仅用于计算的副本，将 x 替换为 * ---
+    const lineForCalc = inpLine.replaceAll('x', '*');
+
     if (inpLine.includes('a') && inpLine.includes('=')) {
         try { // 尝试解方程
-            result = solveEquation(inpLine);
-            result = `a = ${result}`
+            result = solveEquation(lineForCalc);
+            result = `a = ${result}` // 你的代码是 a=... 我加了空格
         } catch (error) {
             console.log(`error: `, error)
             //如果solveEquation内部出错, 也不影响下面逻辑执行
@@ -138,10 +193,10 @@ function GetLineNoCommentResult(inpLine: string) {
     }
 
     try {
-        const needPercent = inpLine.includes('/') ? true : false
-        const evalResult = evaluate(inpLine);
+        const needPercent = lineForCalc.includes('/') ? true : false
+        const evalResult = evaluate(lineForCalc);
         const formattedResult = formatEvalResult(evalResult, needPercent);
-        result = `${inpLine} = ${formattedResult}`;
+        result = `${inpLine} = ${formattedResult}`; 
     } catch (error: any) {
         console.log(`error: `, error)
         result = `${inpLine}`; //如果发生异常 还是显示原始行
@@ -192,4 +247,3 @@ function solveEquation(equation: string): string {
     }
     return resultStr;
 }
-

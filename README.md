@@ -22,9 +22,11 @@ A demo page deployed using Cloudflare Pages -> [Cloudflare Demo URL](https://tex
 
 ![desc](images/demo-calc.png)
 
+### New Features
+**July 27, 2025: New One-Click Copy Feature**  
+Hover over any result line to reveal a copy icon. Simply click it to copy the entire line to your clipboard.
 
 ### Features
-
 *   **Basic Arithmetic:** Performs addition, subtraction, multiplication, division, and other standard mathematical operations.  
 *   **Multiplication symbols:** For better **markdown** file compatibility, You can choose the multiplication symbol you like. "2*3=6" is equals to "2x3=6".
 *   **Equation Solving:** Solves linear equations with a single variable 'a'.
@@ -34,6 +36,7 @@ A demo page deployed using Cloudflare Pages -> [Cloudflare Demo URL](https://tex
 *   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
 *   **PWA Support:**  After deployment using Https, it can be installed as a local application through PWA.
 *   **Cloud Provider Pages Deployment:** Supports static deployment on various service providers' pages.
+
 
 ### Tech Stack
 
@@ -111,8 +114,11 @@ This project is licensed under the [GPL3 License](LICENSE).
 [备用地址1](https://text-calcer.edgeone.app/)
 [备用地址2](https://text-calcer.zone.id/)
 
-### 功能特性
+### 新功能
+**2025-07-27 增加一个懒人功能: 一键复制**  
+将鼠标悬停在计算结果的某一行时，会看到一个复制图标。点击它，就可以一键复制整行结果到剪贴板。
 
+### 功能特性
 *   **基础算术：** 执行加法、减法、乘法、除法和其他标准数学运算。
 *   **乘法符号：** 可以选择你喜欢的乘法符号，为了更好的markdown兼容性，字符'x'和字符'\*'都会被视为乘法符号. "2*3=6"等价于"2x3=6".
 *   **方程求解：** 求解具有单个变量 'a' 的线性方程。
@@ -121,6 +127,10 @@ This project is licensed under the [GPL3 License](LICENSE).
 *   **缓存输入内容：** 缓存用户输入的内容 下次打开网页时进行复原
 *   **PWA支持：** 使用Https部署后可以通过PWA安装到本地应用
 *   **云服务商pages部署：** 支持各种服务商的pages静态部署
+
+
+
+
 
 
 
