@@ -1,6 +1,6 @@
 import { evaluate, format, MathType } from 'mathjs';
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Configs } from '@/conf';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
@@ -16,12 +16,67 @@ export function TextCalcApp() {
     const [copiedLineIndex, setCopiedLineIndex] = useState<number | null>(null);
     // --- 用于追踪鼠标悬停的行 ---
     const [hoveredLineIndex, setHoveredLineIndex] = useState<number | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleInputChange = (value: string) => {
         const resArray = calculateResults(value)
         setLines({ input: value, result: resArray });
         localStorage.setItem('calcInput', value);
     };
+
+    const showNotice = (message: string) => {
+        if (noticeTimerRef.current) {
+            clearTimeout(noticeTimerRef.current);
+        }
+
+        setNotice(message);
+        noticeTimerRef.current = setTimeout(() => {
+            setNotice(null);
+            noticeTimerRef.current = null;
+        }, 1500);
+    };
+
+    const resetWorkspace = () => {
+        setLines({ input: '', result: [] });
+        localStorage.removeItem('calcInput');
+        setCopiedLineIndex(null);
+        setHoveredLineIndex(null);
+        showNotice('已清屏');
+        textareaRef.current?.focus();
+    };
+
+    const matchesShortcut = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        const shortcut = Configs.ClearWorkspaceShortcut.trim().toLowerCase();
+        const tokens = shortcut
+            .split('+')
+            .map((part) => part.trim())
+            .filter(Boolean);
+
+        if (tokens.length === 0) return false;
+
+        const key = tokens[tokens.length - 1];
+        const modifiers = new Set(tokens.slice(0, -1));
+
+        return (
+            event.key.toLowerCase() === key &&
+            event.ctrlKey === modifiers.has('ctrl') &&
+            event.shiftKey === modifiers.has('shift') &&
+            event.altKey === modifiers.has('alt') &&
+            event.metaKey === modifiers.has('meta')
+        );
+    };
+
+    const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.nativeEvent.isComposing) return;
+        if (!matchesShortcut(event)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        resetWorkspace();
+    };
+
     const handleCopy = (textToCopy: string, index: number) => {
         if (!textToCopy.trim()) return;
         const resultPart = textToCopy
@@ -34,59 +89,174 @@ export function TextCalcApp() {
             console.error('无法复制文本: ', err);
         });
     };
+
+    useEffect(() => {
+        return () => {
+            if (noticeTimerRef.current) {
+                clearTimeout(noticeTimerRef.current);
+            }
+        };
+    }, []);
+
+    const shortcutLabel = Configs.ClearWorkspaceShortcut
+        .split('+')
+        .map((part) => {
+            const normalized = part.trim();
+            if (!normalized) return '';
+            if (normalized.length === 1) {
+                return normalized.toUpperCase();
+            }
+            return normalized[0].toUpperCase() + normalized.slice(1);
+        })
+        .filter(Boolean)
+        .join(' + ');
+
+    const hasResults = lines.result.length > 0;
+    const isIdle = !lines.input.trim() && !hasResults;
+
     return (
-        <div className="container mx-auto p-4 grid grid-cols-2 gap-4 ">
-            <div className="flex flex-col space-y-2 ">
-                <Textarea
-                    value={lines.input}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder={Configs.DefaultTxt}
-                    // 对齐修正 "leading-8" 与右侧 h-8 对应，确保每行高度一致
-                    className="w-full min-h-[calc(90vh-1rem)] md:text-2xl font-mono leading-8"
-                />
+        <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,rgba(248,250,252,0.96)_0%,rgba(255,255,255,1)_36%,rgba(244,246,248,0.98)_100%)]">
+            <div className="pointer-events-none absolute inset-0 -z-10">
+                <div className="absolute -left-24 top-[-4rem] h-80 w-80 rounded-full bg-amber-200/30 blur-3xl" />
+                <div className="absolute right-[-5rem] top-32 h-96 w-96 rounded-full bg-slate-200/45 blur-3xl" />
             </div>
-            
-            <div className="flex flex-col space-y-2">
-                {/* 对齐修正 使用与Textarea相同的 px-3 py-2, 并继承字体和行高样式 */}
-                <div className="w-full min-h-[calc(90vh-1rem)] font-bold md:text-2xl font-mono leading-8 px-3 py-2 border bg-background rounded-md overflow-y-auto">
-                    {lines.result.map((line, index) => (
-                        // 对齐修正 `h-8` 确保此容器高度与 `leading-8` 的行高完全匹配
-                        <div
-                            key={index}
-                            className="group flex justify-between items-center h-8" 
-                        >
-                            {/* 使用 <pre> 保留空格，font-bold 让结果突出 */}
-                            <pre className="font-bold">
-                                {/* --- 使用 span 包裹文本，并根据悬停状态动态应用样式 --- */}
-                                <span className={`transition-colors duration-150 rounded px-1 ${
-                                    hoveredLineIndex === index ? 'bg-muted' : 'bg-transparent'
-                                }`}>
-                                    {/* --- 对齐修正: 处理空行 --- */}
-                                    {/* 如果行为空，渲染一个空格，使其占据一行的高度 */}
-                                    {line || <>&nbsp;</>}
-                                </span>
-                            </pre>
-                            {line.trim() && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleCopy(line, index)}
-                                    // --- 鼠标进入和离开事件，用于更新悬停状态 ---
-                                    onMouseEnter={() => setHoveredLineIndex(index)}
-                                    onMouseLeave={() => setHoveredLineIndex(null)}
-                                >
-                                    {copiedLineIndex === index ? (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                        <Copy className="h-4 w-4" />
-                                    )}
-                                    <span className="sr-only">复制此行</span>
-                                </Button>
+
+            <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+                <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-3 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.55)] backdrop-blur">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                            Text Calculator
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="min-h-9">
+                                {notice ? (
+                                    <div
+                                        className="inline-flex items-center rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-700 shadow-sm"
+                                        role="status"
+                                        aria-live="polite"
+                                    >
+                                        {notice}
+                                    </div>
+                                ) : null}
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={resetWorkspace}
+                                className="h-9 rounded-full border-slate-300 bg-white/90 px-4 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+                            >
+                                清屏
+                                <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                                    {shortcutLabel}
+                                </kbd>
+                            </Button>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-2">
+                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
+                        <div className="space-y-1">
+                            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                                Input
+                            </div>
+                        </div>
+                        <Textarea
+                            ref={textareaRef}
+                            value={lines.input}
+                            onChange={(e) => handleInputChange(e.target.value)}
+                            onKeyDown={handleEditorKeyDown}
+                            placeholder={Configs.DefaultTxt}
+                            className="min-h-[min(72vh,960px)] flex-1 rounded-2xl border-slate-200 bg-white/95 p-4 font-mono text-[18px] leading-8 text-slate-900 shadow-inner shadow-slate-100/70 placeholder:text-slate-400 md:text-xl"
+                        />
+                    </section>
+
+                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
+                        <div className="space-y-1">
+                            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                                Result
+                            </div>
+                        </div>
+
+                        <div className="flex min-h-[min(72vh,960px)] flex-1 flex-col overflow-y-auto rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-inner shadow-slate-100/70">
+                            {hasResults ? (
+                                <div className="font-mono text-[18px] font-bold leading-8 text-slate-900 md:text-xl">
+                                    {lines.result.map((line, index) => (
+                                        <div
+                                            key={index}
+                                            className="group flex h-8 items-center justify-between gap-3 rounded-lg px-2 transition-colors hover:bg-slate-100/60"
+                                        >
+                                            <pre className="truncate font-bold">
+                                                <span className={`rounded px-1 transition-colors duration-150 ${
+                                                    hoveredLineIndex === index ? 'bg-slate-200/80' : 'bg-transparent'
+                                                }`}>
+                                                    {line || <>&nbsp;</>}
+                                                </span>
+                                            </pre>
+                                            {line.trim() && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 shrink-0 rounded-full text-slate-500 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-slate-200/60 hover:text-slate-900"
+                                                    onClick={() => handleCopy(line, index)}
+                                                    onMouseEnter={() => setHoveredLineIndex(index)}
+                                                    onMouseLeave={() => setHoveredLineIndex(null)}
+                                                >
+                                                    {copiedLineIndex === index ? (
+                                                        <Check className="h-4 w-4 text-emerald-600" />
+                                                    ) : (
+                                                        <Copy className="h-4 w-4" />
+                                                    )}
+                                                    <span className="sr-only">复制此行</span>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : isIdle ? (
+                                <div className="flex flex-1 items-center justify-center text-left">
+                                    <div className="max-w-md space-y-5">
+                                        <div className="space-y-2">
+                                            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 shadow-sm">
+                                                Quick Tips
+                                            </div>
+                                            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+                                                开始输入，结果会自动生成
+                                            </h2>
+                                            <p className="text-sm leading-6 text-slate-600">
+                                                右侧会实时显示计算结果，空状态下这里展示的是这个工具能做什么。
+                                            </p>
+                                        </div>
+
+                                        <div className="grid gap-3 text-sm text-slate-700">
+                                            <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
+                                                支持多行输入，内容会自动缓存到本地
+                                            </div>
+                                            <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
+                                                悬停某一行可复制整行结果
+                                            </div>
+                                            <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
+                                                支持注释、乘号替换和线性方程求解
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-1 items-center justify-center text-center">
+                                    <div className="max-w-sm space-y-2">
+                                        <div className="text-base font-semibold text-slate-700">
+                                            没有可显示的结果
+                                        </div>
+                                        <div className="text-sm leading-6 text-slate-500">
+                                            如果你删除了所有输入，这里会回到提示状态。
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
-                    ))}
-                </div>
+                    </section>
+                </main>
             </div>
         </div>
     );
@@ -98,9 +268,12 @@ const calculateResults = (value: string): string[] => { // <-- 返回类型改�
     const inputLines = value.split('\n');
     const resultLines = [];
     for (const line of inputLines) {
+        if (line.trim() === '') {
+            resultLines.push('');
+            continue;
+        }
         const { lineWithoutComment, comment } = HandleOneLine(line);
-        if (lineWithoutComment === "") {
-            // 如果只有注释或为空行，也推送，以保持行号对应
+        if (lineWithoutComment === '') {
             resultLines.push(comment ? `# ${comment}` : '');
             continue;
         }
