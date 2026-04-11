@@ -26,11 +26,15 @@ A demo page deployed -> [Demo URL](https://text-calcer.knowckx.top/)
 **July 27, 2025: New One-Click Copy Feature**  
 Hover over any result line to reveal a copy icon. Simply click it to copy the entire line to your clipboard.
 
+**2026-04: Clear Workspace**  
+Use the `Clear` button or press `Ctrl + Shift + K` while the editor is focused to clear the current workspace and start a new calculation batch.
+
 ### Features
 *   **Basic Arithmetic:** Performs addition, subtraction, multiplication, division, and other standard mathematical operations.  
 *   **Multiplication symbols:** For better **markdown** file compatibility, You can choose the multiplication symbol you like. "2*3=6" is equals to "2x3=6".
 *   **Equation Solving:** Solves linear equations with a single variable 'a'.
 *   **Comment Support:** Allows users to add comments to their calculations using the `#` symbol.  The part after `#` will be treated as a comment and ignored during calculation.
+*   **Clear Workspace:** Use the `Clear` button or `Ctrl + Shift + K` to reset the editor, results, and cached input.
 *   **Responsive Design:** Adapts to different screen sizes using a two-column layout.
 *   **Formatted Output:** Displays numbers in a user-friendly way. Formats the output, displaying percentages if the value is too small.
 *   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
@@ -132,11 +136,15 @@ This project is licensed under the [GPL3 License](LICENSE).
 **2025-07-27 增加一个懒人功能: 一键复制**  
 将鼠标悬停在计算结果的某一行时，会看到一个复制图标。点击它，就可以一键复制整行结果到剪贴板。
 
+**2026-04 增加清屏功能**  
+点击页面顶部的 `清屏` 按钮，或者在输入框聚焦时按下 `Ctrl + Shift + K`，即可清空当前输入、结果和本地缓存，开始下一轮计算。
+
 ### 功能特性
 *   **基础算术：** 执行加法、减法、乘法、除法和其他标准数学运算。
 *   **乘法符号：** 可以选择你喜欢的乘法符号，为了更好的markdown兼容性，字符'x'和字符'\*'都会被视为乘法符号. "2*3=6"等价于"2x3=6".
 *   **方程求解：** 求解具有单个变量 'a' 的线性方程。
 *   **注释支持：** 允许用户使用 `#` 符号向其计算添加注释。 `#` 后面的部分将被视为注释，并在计算过程中被忽略。
+*   **清屏功能：** 点击 `清屏` 按钮或按下 `Ctrl + Shift + K`，可重置编辑器、结果和缓存输入。
 *   **格式化输出：** 以用户友好的方式显示数字。格式化输出， 除法值显示百分比。
 *   **缓存输入内容：** 缓存用户输入的内容 下次打开网页时进行复原
 *   **PWA支持：** 使用Https部署后可以通过PWA安装到本地应用
