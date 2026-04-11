@@ -78,6 +78,21 @@ Hover over any result line to reveal a copy icon. Simply click it to copy the en
     pnpm preview --host
     ```
 
+5.  **Docker deployment:**
+
+    ```bash
+    docker build -t text-calcer .
+    docker run --rm -p 8080:80 text-calcer
+    ```
+
+    Or use Docker Compose:
+
+    ```bash
+    docker compose up --build
+    ```
+
+    Then open `http://localhost:8080`.
+
 ### Contributing
 
 Fork/Star are welcome.
@@ -172,6 +187,21 @@ This project is licensed under the [GPL3 License](LICENSE).
     pnpm run build
     pnpm preview --host
     ```
+
+5.  **Docker 部署:**
+
+    ```bash
+    docker build -t text-calcer .
+    docker run --rm -p 8080:80 text-calcer
+    ```
+
+    或者使用 Docker Compose：
+
+    ```bash
+    docker compose up --build
+    ```
+
+    然后打开 `http://localhost:8080`。
 
 
 
