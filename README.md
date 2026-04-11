@@ -18,7 +18,7 @@ The project is built using React, TypeScript, Vite, pnpm, Tailwind CSS, and Shad
 
 ### Example
 
-A demo page deployed using Cloudflare Pages -> [Cloudflare Demo URL](https://text-calcer.pages.dev/)
+A demo page deployed -> [Demo URL](https://text-calcer.knowckx.top/)
 
 ![desc](images/demo-calc.png)
 
@@ -92,9 +92,8 @@ This project is licensed under the [GPL3 License](LICENSE).
 
 
 # 中文
-欢迎阅读项目文档！
 
-这个项目来自于自己在买基金时，经常需要计算目前的场内价格对应基金净值产生的溢价率/折价率。    
+这个项目来自于自己在买股票，买基金时，经常遇到相对涨幅，基金折价率等简单运算。    
 我不喜欢拿着手机算，win自带的计算器输入又不够自由，所以产生了此项目
 
 ### 基于文本的计算器（带方程求解）
@@ -105,17 +104,14 @@ This project is licensed under the [GPL3 License](LICENSE).
 
 项目使用 React、TypeScript、Vite、pnpm、Tailwind CSS 和 Shadcn UI 构建。
 
-### 例子
+### 在线例子
 
-使用Cloudflare Pages部署的一个示例页面 -> [Cloudflare Demo URL](https://text-calcer.pages.dev/)
+我在`EdgeOne`上部署了一个纯静态页面，[text-calcer URL](https://text-calcer.knowckx.top/)，可以直接使用
 
 
 ![desc](images/demo-calc.png)
 
-### 备用地址
-假如在国内对Cloudflare的访问有问题，可以考虑以下的备用地址:  
-[备用地址1](https://text-calcer.edgeone.app/)
-[备用地址2](https://text-calcer.zone.id/)
+
 
 ### 新功能
 **2025-07-27 增加一个懒人功能: 一键复制**  
