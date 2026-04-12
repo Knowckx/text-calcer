@@ -144,18 +144,18 @@ export function TextCalcApp() {
                 <div className="absolute right-[-5rem] top-32 h-96 w-96 rounded-full bg-slate-200/45 blur-3xl" />
             </div>
 
-            <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-3 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.55)] backdrop-blur">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-600">
+            <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
+                <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-2 shadow-[0_14px_34px_-34px_rgba(15,23,42,0.42)] backdrop-blur">
+                    <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-600">
                             {APP_TITLE}
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3">
-                            <div className="min-h-9">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="min-h-7">
                                 {notice ? (
                                     <div
-                                        className="inline-flex items-center rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-700 shadow-sm"
+                                        className="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 shadow-none"
                                         role="status"
                                         aria-live="polite"
                                     >
@@ -167,10 +167,10 @@ export function TextCalcApp() {
                                 variant="outline"
                                 size="sm"
                                 onClick={resetWorkspace}
-                                className="h-9 rounded-full border-slate-300 bg-white/90 px-4 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+                                className="h-8 rounded-full border-slate-300 bg-white/90 px-3.5 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
                             >
                                 {messages.actions.clear}
-                                <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                                <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
                                     {shortcutLabel}
                                 </kbd>
                             </Button>
@@ -180,11 +180,9 @@ export function TextCalcApp() {
                 </header>
 
                 <main className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-2">
-                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
-                        <div className="space-y-1">
-                            <div className="text-sm font-semibold text-slate-400">
-                                {messages.titles.input}
-                            </div>
+                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-2.5 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
+                        <div className="pb-0.5 pl-0.5 text-[12px] font-medium leading-4 text-slate-400">
+                            {messages.titles.input}
                         </div>
                         <Textarea
                             ref={textareaRef}
@@ -196,11 +194,9 @@ export function TextCalcApp() {
                         />
                     </section>
 
-                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
-                        <div className="space-y-1">
-                            <div className="text-sm font-semibold text-slate-400">
-                                {messages.titles.result}
-                            </div>
+                    <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-2.5 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
+                        <div className="pb-0.5 pl-0.5 text-[12px] font-medium leading-4 text-slate-400">
+                            {messages.titles.result}
                         </div>
 
                         <div className="flex min-h-[min(72vh,960px)] flex-1 flex-col overflow-y-auto rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-inner shadow-slate-100/70">
