@@ -4,13 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 import { Configs } from '@/conf';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { useI18n } from '@/i18n/I18nProvider';
+import type { Locale, Messages } from '@/i18n/types';
+
+const APP_TITLE = 'Text Calculator';
 
 export function TextCalcApp() {
+    const { locale, messages } = useI18n();
     const [lines, setLines] = useState<{ input: string; result: string[] }>(() => {
         const savedInput = localStorage.getItem('calcInput') || '';
         return {
             input: savedInput,
-            result: savedInput ? calculateResults(savedInput) : []
+            result: savedInput !== '' ? calculateResults(savedInput, messages, locale) : []
         };
     });
     const [copiedLineIndex, setCopiedLineIndex] = useState<number | null>(null);
@@ -21,7 +27,7 @@ export function TextCalcApp() {
     const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleInputChange = (value: string) => {
-        const resArray = calculateResults(value)
+        const resArray = calculateResults(value, messages, locale)
         setLines({ input: value, result: resArray });
         localStorage.setItem('calcInput', value);
     };
@@ -43,7 +49,7 @@ export function TextCalcApp() {
         localStorage.removeItem('calcInput');
         setCopiedLineIndex(null);
         setHoveredLineIndex(null);
-        showNotice('已清屏');
+        showNotice(messages.notices.cleared);
         textareaRef.current?.focus();
     };
 
@@ -85,8 +91,8 @@ export function TextCalcApp() {
             setTimeout(() => {
                 setCopiedLineIndex(null);
             }, 2000);
-        }).catch(err => {
-            console.error('无法复制文本: ', err);
+        }).catch(() => {
+            showNotice(messages.notices.copyFailed);
         });
     };
 
@@ -97,6 +103,23 @@ export function TextCalcApp() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        document.title = APP_TITLE;
+    }, []);
+
+    useEffect(() => {
+        setLines((prev) => {
+            if (prev.input === '') {
+                return prev;
+            }
+
+            return {
+                ...prev,
+                result: calculateResults(prev.input, messages, locale),
+            };
+        });
+    }, [locale, messages]);
 
     const shortcutLabel = Configs.ClearWorkspaceShortcut
         .split('+')
@@ -112,7 +135,7 @@ export function TextCalcApp() {
         .join(' + ');
 
     const hasResults = lines.result.length > 0;
-    const isIdle = !lines.input.trim() && !hasResults;
+    const isIdle = lines.input === '' && !hasResults;
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,rgba(248,250,252,0.96)_0%,rgba(255,255,255,1)_36%,rgba(244,246,248,0.98)_100%)]">
@@ -123,12 +146,12 @@ export function TextCalcApp() {
 
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
                 <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-3 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.55)] backdrop-blur">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
-                            Text Calculator
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-600">
+                            {APP_TITLE}
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
                             <div className="min-h-9">
                                 {notice ? (
                                     <div
@@ -146,11 +169,12 @@ export function TextCalcApp() {
                                 onClick={resetWorkspace}
                                 className="h-9 rounded-full border-slate-300 bg-white/90 px-4 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
                             >
-                                清屏
+                                {messages.actions.clear}
                                 <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
                                     {shortcutLabel}
                                 </kbd>
                             </Button>
+                            <LanguageSwitcher />
                         </div>
                     </div>
                 </header>
@@ -158,8 +182,8 @@ export function TextCalcApp() {
                 <main className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-2">
                     <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
                         <div className="space-y-1">
-                            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                                Input
+                            <div className="text-sm font-semibold text-slate-400">
+                                {messages.titles.input}
                             </div>
                         </div>
                         <Textarea
@@ -167,15 +191,15 @@ export function TextCalcApp() {
                             value={lines.input}
                             onChange={(e) => handleInputChange(e.target.value)}
                             onKeyDown={handleEditorKeyDown}
-                            placeholder={Configs.DefaultTxt}
+                            placeholder={messages.placeholders.formula}
                             className="min-h-[min(72vh,960px)] flex-1 rounded-2xl border-slate-200 bg-white/95 p-4 font-mono text-[18px] leading-8 text-slate-900 shadow-inner shadow-slate-100/70 placeholder:text-slate-400 md:text-xl"
                         />
                     </section>
 
                     <section className="flex min-h-[calc(90vh-7rem)] flex-col gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.5)]">
                         <div className="space-y-1">
-                            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                                Result
+                            <div className="text-sm font-semibold text-slate-400">
+                                {messages.titles.result}
                             </div>
                         </div>
 
@@ -208,7 +232,7 @@ export function TextCalcApp() {
                                                     ) : (
                                                         <Copy className="h-4 w-4" />
                                                     )}
-                                                    <span className="sr-only">复制此行</span>
+                                                    <span className="sr-only">{messages.actions.copyLine}</span>
                                                 </Button>
                                             )}
                                         </div>
@@ -218,26 +242,26 @@ export function TextCalcApp() {
                                 <div className="flex flex-1 items-center justify-center text-left">
                                     <div className="max-w-md space-y-5">
                                         <div className="space-y-2">
-                                            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 shadow-sm">
-                                                Quick Tips
+                                            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">
+                                                {messages.titles.quickTips}
                                             </div>
                                             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-                                                开始输入，结果会自动生成
+                                                {messages.emptyState.heading}
                                             </h2>
                                             <p className="text-sm leading-6 text-slate-600">
-                                                右侧会实时显示计算结果，空状态下这里展示的是这个工具能做什么。
+                                                {messages.emptyState.description}
                                             </p>
                                         </div>
 
                                         <div className="grid gap-3 text-sm text-slate-700">
                                             <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
-                                                支持多行输入，内容会自动缓存到本地
+                                                {messages.emptyState.bullet1}
                                             </div>
                                             <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
-                                                悬停某一行可复制整行结果
+                                                {messages.emptyState.bullet2}
                                             </div>
                                             <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
-                                                支持注释、乘号替换和线性方程求解
+                                                {messages.emptyState.bullet3}
                                             </div>
                                         </div>
                                     </div>
@@ -246,10 +270,10 @@ export function TextCalcApp() {
                                 <div className="flex flex-1 items-center justify-center text-center">
                                     <div className="max-w-sm space-y-2">
                                         <div className="text-base font-semibold text-slate-700">
-                                            没有可显示的结果
+                                            {messages.noResults.heading}
                                         </div>
                                         <div className="text-sm leading-6 text-slate-500">
-                                            如果你删除了所有输入，这里会回到提示状态。
+                                            {messages.noResults.description}
                                         </div>
                                     </div>
                                 </div>
@@ -263,7 +287,11 @@ export function TextCalcApp() {
 }
 
 // --- 5. 修改计算函数: 返回 string[] 而不是 string ---
-const calculateResults = (value: string): string[] => { // <-- 返回类型改为 string[]
+const calculateResults = (value: string, messages: Messages, locale: Locale): string[] => {
+
+    if (value === '') {
+        return [];
+    }
 
     const inputLines = value.split('\n');
     const resultLines = [];
@@ -282,39 +310,45 @@ const calculateResults = (value: string): string[] => { // <-- 返回类型改�
             resultLines.push(lineWithoutComment);
             continue;
         }
-        let result = GetLineNoCommentResult(lineWithoutComment);
+        let result = GetLineNoCommentResult(lineWithoutComment, messages, locale);
         if (comment) {
             result += `    # ${comment}`;
         }
         resultLines.push(result);
     }
-    return resultLines; // <-- 直接返回数组
+    return resultLines;
 };
 
 
 
 
-function formatEvalResultNumber(evalResult: number, needPercent: boolean): string {
-    if (Number.isInteger(evalResult)) return evalResult.toString();
+function formatEvalResultNumber(evalResult: number, needPercent: boolean, locale: Locale): string {
+    if (Number.isInteger(evalResult)) {
+        return new Intl.NumberFormat(locale, { maximumFractionDigits: 0, useGrouping: false }).format(evalResult);
+    }
 
-    const formatted = format(evalResult, { notation: 'fixed', precision: 4 });
-    let res = parseFloat(formatted).toString();
+    const res = new Intl.NumberFormat(locale, {
+        maximumFractionDigits: 4,
+        useGrouping: false,
+    }).format(evalResult);
 
     // 股票涨跌幅显示优化 假如比例值处在[70%, 130%]时显示具体的百分比 实际上A股日内涨跌幅是20%以内 30%能满足大部分情况
     if (Configs.ShowNumPercentDetail){  // 通过配置开启或者关闭
         if (needPercent && evalResult < 1.3 && evalResult > 0.7) {
-            const temp = format(evalResult * 100 - 100, { notation: 'fixed', precision: 2 })
-            const fix = evalResult > 1 ? "+" : ""
-            const percent = fix + parseFloat(temp).toString() + "%";
-            res = `${res} (${percent})`;
+            const percent = new Intl.NumberFormat(locale, {
+                maximumFractionDigits: 2,
+                useGrouping: false,
+                signDisplay: 'always',
+            }).format(evalResult * 100 - 100);
+            return `${res} (${percent}%)`;
         }
     }
     return res
 }
 
-function formatEvalResult(evalResult: MathType, needPercent: boolean): string {
+function formatEvalResult(evalResult: MathType, needPercent: boolean, locale: Locale): string {
     if (typeof evalResult === 'number') {
-        return formatEvalResultNumber(evalResult, needPercent)
+        return formatEvalResultNumber(evalResult, needPercent, locale)
     } else if (typeof evalResult === 'string') {
         return evalResult;
     } else if (evalResult && typeof evalResult === 'object' && 'type' in evalResult) {
@@ -343,24 +377,22 @@ function HandleOneLine(line: string) {
     }
     // 2. 移除注释部分，再进行计算.
     const lineWithoutComment = trimmedLine.replace(/#.*/, '').trim();
-    console.log(`varibale: `, { lineWithoutComment, comment })
-    return { lineWithoutComment, comment }; // 返回一个对象
+    return { lineWithoutComment, comment };
 }
 
 
-function GetLineNoCommentResult(inpLine: string) {
+function GetLineNoCommentResult(inpLine: string, messages: Messages, locale: Locale) {
     let result = '';
     // --- 创建一个仅用于计算的副本，将 x 替换为 * ---
     const lineForCalc = inpLine.replaceAll('x', '*');
 
     if (inpLine.includes('a') && inpLine.includes('=')) {
         try { // 尝试解方程
-            result = solveEquation(lineForCalc);
-            result = `a = ${result}` // 你的代码是 a=... 我加了空格
-        } catch (error) {
-            console.log(`error: `, error)
+            result = solveEquation(lineForCalc, messages);
+            result = `${messages.calculations.equationPrefix}${result}`;
+        } catch {
             //如果solveEquation内部出错, 也不影响下面逻辑执行
-            result = `${inpLine}  # 方程求解失败, 请检查方程的格式`;
+            result = `${inpLine}  # ${messages.calculations.equationSolveFailed}`;
         }
         return result
     }
@@ -368,22 +400,21 @@ function GetLineNoCommentResult(inpLine: string) {
     try {
         const needPercent = lineForCalc.includes('/') ? true : false
         const evalResult = evaluate(lineForCalc);
-        const formattedResult = formatEvalResult(evalResult, needPercent);
+        const formattedResult = formatEvalResult(evalResult, needPercent, locale);
         result = `${inpLine} = ${formattedResult}`; 
-    } catch (error: any) {
-        console.log(`error: `, error)
-        result = `${inpLine}`; //如果发生异常 还是显示原始行
+    } catch {
+        result = `${inpLine}`;
     }
     return result
 }
 
 
 /** 输入一个一元一次方程 x表示需要求解的变量 */
-function solveEquation(equation: string): string {
+function solveEquation(equation: string, messages: Messages): string {
     // 将方程以"="拆分为左右两部分
     const parts = equation.split('=');
     if (parts.length !== 2) {
-        throw new Error("方程格式不正确，应为 '表达式=表达式'");
+        throw new Error(messages.calculations.equationFormatError);
     }
     const [left, right] = parts;
 
@@ -402,8 +433,8 @@ function solveEquation(equation: string): string {
 
     // 如果系数为0，则需要判断是否有无穷多解或无解
     if (coeff === 0) {
-        if (f0 === 0) return "Infinite solutions"; // 无穷多解
-        else return "No solution"; // 无解
+        if (f0 === 0) return messages.calculations.equationInfiniteSolutions;
+        else return messages.calculations.equationNoSolution;
     }
 
     // 求解 f(a) = 0 => a = -f(0) / coeff
