@@ -12,6 +12,10 @@ const zhCN = {
     result: '结果',
     quickTips: '使用提示',
   },
+  links: {
+    github: '源码',
+    blog: '博客',
+  },
   placeholders: {
     formula: '输入公式，例如：3x10+1 或 3*10+1',
   },

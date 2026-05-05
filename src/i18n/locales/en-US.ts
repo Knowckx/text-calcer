@@ -12,6 +12,10 @@ const enUS = {
     result: 'Result',
     quickTips: 'Quick Tips',
   },
+  links: {
+    github: 'GitHub',
+    blog: 'Blog',
+  },
   placeholders: {
     formula: 'Enter formula, for example: 3x10+1 or 3*10+1',
   },

@@ -12,6 +12,10 @@ export interface Messages {
     result: string;
     quickTips: string;
   };
+  links: {
+    github: string;
+    blog: string;
+  };
   placeholders: {
     formula: string;
   };

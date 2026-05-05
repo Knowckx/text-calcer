@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from 'react';
 import { Configs } from '@/conf';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Github, ExternalLink } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useI18n } from '@/i18n/I18nProvider';
 import type { Locale, Messages } from '@/i18n/types';
@@ -147,34 +147,61 @@ export function TextCalcApp() {
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
                 <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-2 shadow-[0_14px_34px_-34px_rgba(15,23,42,0.42)] backdrop-blur">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-600">
+                        <h1 className="text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">
                             {APP_TITLE}
-                        </div>
+                        </h1>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <div className="min-h-7">
-                                {notice ? (
-                                    <div
-                                        className="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 shadow-none"
-                                        role="status"
-                                        aria-live="polite"
-                                    >
-                                        {notice}
-                                    </div>
-                                ) : null}
+                            <div className="flex flex-wrap items-center gap-2">
+                                <a
+                                    href="https://blog.knowckx.top/"
+                                    target="_blank"
+                                    rel="noopener"
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-50/90 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900"
+                                    aria-label={messages.links.blog}
+                                >
+                                    <ExternalLink className="h-4 w-4" />
+                                    <span>{messages.links.blog}</span>
+                                </a>
+                                <a
+                                    href="https://github.com/Knowckx/text-calcer"
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                    aria-label={messages.links.github}
+                                >
+                                    <Github className="h-4 w-4" />
+                                    <span>{messages.links.github}</span>
+                                </a>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={resetWorkspace}
-                                className="h-8 rounded-full border-slate-300 bg-white/90 px-3.5 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
-                            >
-                                {messages.actions.clear}
-                                <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
-                                    {shortcutLabel}
-                                </kbd>
-                            </Button>
-                            <LanguageSwitcher />
+
+                            <div className="hidden h-6 w-px bg-slate-200/80 sm:block" aria-hidden="true" />
+
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="min-h-7">
+                                    {notice ? (
+                                        <div
+                                            className="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 shadow-none"
+                                            role="status"
+                                            aria-live="polite"
+                                        >
+                                            {notice}
+                                        </div>
+                                    ) : null}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={resetWorkspace}
+                                    className="h-8 rounded-full border-slate-300 bg-white/90 px-3.5 font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+                                >
+                                    {messages.actions.clear}
+                                    <kbd className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                                        {shortcutLabel}
+                                    </kbd>
+                                </Button>
+                                <LanguageSwitcher />
+                            </div>
                         </div>
                     </div>
                 </header>
