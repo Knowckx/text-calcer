@@ -1,6 +1,11 @@
 import type { Messages } from '../types';
 
 const enUS = {
+  seo: {
+    title: 'Text Calculator - Text Formula Calculator',
+    description: 'A text-based calculator for multiline expressions, inline comments, multiplication aliases, and one-variable linear equations.',
+    siteName: 'Text Calculator',
+  },
   actions: {
     clear: 'Clear',
     copyLine: 'Copy line',

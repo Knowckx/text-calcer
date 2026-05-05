@@ -1,6 +1,11 @@
 import type { Messages } from '../types';
 
 const zhCN = {
+  seo: {
+    title: 'Text Calculator - 文本计算器与方程求解',
+    description: '支持多行文本公式、注释、乘号替换和一元一次方程求解的在线文本计算器。',
+    siteName: 'Text Calculator',
+  },
   actions: {
     clear: '清屏',
     copyLine: '复制此行',

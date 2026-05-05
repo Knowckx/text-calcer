@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { LOCALE_STORAGE_KEY, getMessages, resolveLocale } from './index';
 import type { Locale, MessageKey, Messages } from './types';
+import { getLocalePath, normalizeLocalePathname } from '@/lib/site';
 
 type I18nContextValue = {
   locale: Locale;
@@ -32,13 +33,37 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
 
     document.documentElement.lang = locale;
+
+    const expectedPath = getLocalePath(locale);
+    const currentPath = normalizeLocalePathname(window.location.pathname);
+    if (currentPath !== expectedPath) {
+      const nextUrl = `${expectedPath}${window.location.search}${window.location.hash}`;
+      window.history.replaceState({ locale }, '', nextUrl);
+    }
   }, [locale]);
 
   const messages = getMessages(locale);
 
   const setLocale = (nextLocale: Locale) => {
+    if (nextLocale === locale) {
+      return;
+    }
+
+    const nextUrl = `${getLocalePath(nextLocale)}${window.location.search}${window.location.hash}`;
+    window.history.pushState({ locale: nextLocale }, '', nextUrl);
     setLocaleState(nextLocale);
   };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setLocaleState(resolveLocale());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   const t = (key: MessageKey) => {
     const value = readMessage(messages, key);

@@ -7,6 +7,8 @@ import { Copy, Check, Github, ExternalLink } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useI18n } from '@/i18n/I18nProvider';
 import type { Locale, Messages } from '@/i18n/types';
+import { getLocaleUrl } from '@/lib/site';
+import { syncSeoHead } from '@/lib/seo';
 
 const APP_TITLE = 'Text Calculator';
 
@@ -105,10 +107,6 @@ export function TextCalcApp() {
     }, []);
 
     useEffect(() => {
-        document.title = APP_TITLE;
-    }, []);
-
-    useEffect(() => {
         setLines((prev) => {
             if (prev.input === '') {
                 return prev;
@@ -118,6 +116,20 @@ export function TextCalcApp() {
                 ...prev,
                 result: calculateResults(prev.input, messages, locale),
             };
+        });
+    }, [locale, messages]);
+
+    useEffect(() => {
+        syncSeoHead({
+            title: messages.seo.title,
+            description: messages.seo.description,
+            siteName: messages.seo.siteName,
+            canonicalUrl: getLocaleUrl(locale),
+            locale,
+            alternateUrls: [
+                { locale: 'zh-CN', url: getLocaleUrl('zh-CN') },
+                { locale: 'en-US', url: getLocaleUrl('en-US') },
+            ],
         });
     }, [locale, messages]);
 
@@ -147,7 +159,7 @@ export function TextCalcApp() {
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
                 <header className="rounded-3xl border border-slate-200/80 bg-white/85 px-5 py-2 shadow-[0_14px_34px_-34px_rgba(15,23,42,0.42)] backdrop-blur">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-                        <h1 className="text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">
+                        <h1 className="select-none text-[15px] font-medium tracking-tight text-slate-500 sm:text-base">
                             {APP_TITLE}
                         </h1>
 

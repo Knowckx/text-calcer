@@ -1,6 +1,11 @@
 export type Locale = 'zh-CN' | 'en-US';
 
 export interface Messages {
+  seo: {
+    title: string;
+    description: string;
+    siteName: string;
+  };
   actions: {
     clear: string;
     copyLine: string;

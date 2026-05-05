@@ -1,5 +1,6 @@
 import enUS from './locales/en-US';
 import zhCN from './locales/zh-CN';
+import { getLocaleFromPathname } from '@/lib/site';
 import type { Locale, Messages } from './types';
 
 export const LOCALE_STORAGE_KEY = 'text-calcer-locale';
@@ -15,6 +16,13 @@ export function isLocale(value: string | null | undefined): value is Locale {
 }
 
 export function resolveLocale(): Locale {
+  if (typeof window !== 'undefined') {
+    const pathnameLocale = getLocaleFromPathname(window.location.pathname);
+    if (pathnameLocale) {
+      return pathnameLocale;
+    }
+  }
+
   try {
     const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (isLocale(storedLocale)) {

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://text-calcer.knowckx.top/sitemap.xml

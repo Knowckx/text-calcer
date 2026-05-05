@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://text-calcer.knowckx.top/zh-CN/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://text-calcer.knowckx.top/zh-CN/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://text-calcer.knowckx.top/en-US/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://text-calcer.knowckx.top/zh-CN/" />
+  </url>
+  <url>
+    <loc>https://text-calcer.knowckx.top/en-US/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://text-calcer.knowckx.top/zh-CN/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://text-calcer.knowckx.top/en-US/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://text-calcer.knowckx.top/zh-CN/" />
+  </url>
+</urlset>
