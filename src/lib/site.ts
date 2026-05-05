@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18n/types';
+import { siteConfig } from '@/config/site';
 
-export const DEFAULT_SITE_ORIGIN = 'https://text-calcer.knowckx.top';
-export const SITE_ORIGIN = (import.meta.env.VITE_SITE_URL || DEFAULT_SITE_ORIGIN).replace(/\/$/, '');
+export const SITE_ORIGIN = siteConfig.siteUrl.replace(/\/$/, '');
 
 const localePaths: Record<Locale, string> = {
   'zh-CN': '/zh-CN/',
