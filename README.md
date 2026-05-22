@@ -6,118 +6,17 @@
 
 ---
 
-# English
-
-### Text-based Calculator (with Equation Solver)
-
-A text-based calculator application, a static frontend project.
-
-Allows users to calculate results by entering expressions in a text area, supporting linear equations with one variable.
-
-The project is built using React, TypeScript, Vite, pnpm, Tailwind CSS, and Shadcn UI.
-
-### Example
-
-A demo page deployed -> [Demo URL](https://text-calcer.knowckx.top/)
-
-![desc](images/demo-calc.png)
-
-### New Features
-**July 27, 2025: New One-Click Copy Feature**  
-Hover over any result line to reveal a copy icon. Simply click it to copy the entire line to your clipboard.
-
-**2026-04: Clear Workspace**  
-Use the `Clear` button or press `Ctrl + Shift + K` while the editor is focused to clear the current workspace and start a new calculation batch.
-
-**2026-04: Language Switcher**  
-Switch between Chinese and English from the top bar. Your selection is remembered locally and restored on the next visit.
-
-### Features
-*   **Basic Arithmetic:** Performs addition, subtraction, multiplication, division, and other standard mathematical operations.  
-*   **Multiplication symbols:** For better **markdown** file compatibility, You can choose the multiplication symbol you like. "2*3=6" is equals to "2x3=6".
-*   **Equation Solving:** Solves linear equations with a single variable 'a'.
-*   **Comment Support:** Allows users to add comments to their calculations using the `#` symbol.  The part after `#` will be treated as a comment and ignored during calculation.
-*   **Clear Workspace:** Use the `Clear` button or `Ctrl + Shift + K` to reset the editor, results, and cached input.
-*   **Internationalization:** Switch between Chinese and English from the top bar. The app remembers your language choice locally.
-*   **Responsive Design:** Adapts to different screen sizes using a two-column layout.
-*   **Formatted Output:** Displays numbers in a user-friendly way. Formats the output, displaying percentages if the value is too small.
-*   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
-*   **PWA Support:**  After deployment using Https, it can be installed as a local application through PWA.
-*   **Cloud Provider Pages Deployment:** Supports static deployment on various service providers' pages.
-
-
-### Tech Stack
-
-*   **Frontend Framework:** [React](https://react.dev/)
-*   **Language:** [TypeScript](https://www.typescriptlang.org/)
-*   **Build Tool:** [Vite](https://vitejs.dev/)
-*   **Package Manager:** [pnpm](https://pnpm.io/)
-*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-*   **UI Components:** [Shadcn UI](https://ui.shadcn.com/)
-*   **Math Library:** [Math.js](https://mathjs.org/)
-
-### Quick Start
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/Knowckx/text-calcer.git
-    cd text-calcer
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    pnpm install
-    ```
-
-3.  **Run the development server:**
-
-    ```bash
-    pnpm dev
-    ```
-
-    This will start the development server, usually on `http://localhost:3000`. Open this URL in your browser to view the application.
-
-4.  **Local deployment, supporting PWA application installation:**
-
-    ```bash
-    pnpm run build
-    pnpm preview --host
-    ```
-
-5.  **Docker deployment:**
-
-    ```bash
-    docker build -t text-calcer .
-    docker run --rm -p 8080:80 text-calcer
-    ```
-
-    Or use Docker Compose:
-
-    ```bash
-    docker compose up --build
-    ```
-
-    Then open `http://localhost:8080`.
-
-### Contributing
-
-Fork/Star are welcome.
-
-If you find any bugs or have suggestions for improvement, please submit an issue or pull request.
-
-### License
-
-This project is licensed under the [GPL3 License](LICENSE).
-
----
-
-
 # 中文
 
+
+### 背景
 这个项目来自于自己在买股票，买基金时，经常遇到相对涨幅，基金折价率等简单运算。    
-我不喜欢拿着手机算，win自带的计算器输入又不够自由，所以产生了此项目
+我不喜欢拿着手机按，windowss 自带的计算器输入又不够自由，所以产生了此项目
+
+
+### 功能更新日志
+
+- 2026-05-22：修复了快捷键绑定的问题
 
 ### 基于文本的计算器（带方程求解）
 
@@ -231,3 +130,114 @@ This project is licensed under the [GPL3 License](LICENSE).
 ### 许可证
 
 本项目根据 [GPL3 许可证](LICENSE) 获得许可
+
+# English
+
+### Change Log
+
+- 2026-05-22: Fixed the shortcut binding issue
+
+### Text-based Calculator (with Equation Solver)
+
+A text-based calculator application, a static frontend project.
+
+Allows users to calculate results by entering expressions in a text area, supporting linear equations with one variable.
+
+The project is built using React, TypeScript, Vite, pnpm, Tailwind CSS, and Shadcn UI.
+
+### Example
+
+A demo page deployed -> [Demo URL](https://text-calcer.knowckx.top/)
+
+![desc](images/demo-calc.png)
+
+### New Features
+**July 27, 2025: New One-Click Copy Feature**  
+Hover over any result line to reveal a copy icon. Simply click it to copy the entire line to your clipboard.
+
+**2026-04: Clear Workspace**  
+Use the `Clear` button or press `Ctrl + Shift + K` while the editor is focused to clear the current workspace and start a new calculation batch.
+
+**2026-04: Language Switcher**  
+Switch between Chinese and English from the top bar. Your selection is remembered locally and restored on the next visit.
+
+### Features
+*   **Basic Arithmetic:** Performs addition, subtraction, multiplication, division, and other standard mathematical operations.  
+*   **Multiplication symbols:** For better **markdown** file compatibility, You can choose the multiplication symbol you like. "2*3=6" is equals to "2x3=6".
+*   **Equation Solving:** Solves linear equations with a single variable 'a'.
+*   **Comment Support:** Allows users to add comments to their calculations using the `#` symbol.  The part after `#` will be treated as a comment and ignored during calculation.
+*   **Clear Workspace:** Use the `Clear` button or `Ctrl + Shift + K` to reset the editor, results, and cached input.
+*   **Internationalization:** Switch between Chinese and English from the top bar. The app remembers your language choice locally.
+*   **Responsive Design:** Adapts to different screen sizes using a two-column layout.
+*   **Formatted Output:** Displays numbers in a user-friendly way. Formats the output, displaying percentages if the value is too small.
+*   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
+*   **PWA Support:**  After deployment using Https, it can be installed as a local application through PWA.
+*   **Cloud Provider Pages Deployment:** Supports static deployment on various service providers' pages.
+
+
+### Tech Stack
+
+*   **Frontend Framework:** [React](https://react.dev/)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **Build Tool:** [Vite](https://vitejs.dev/)
+*   **Package Manager:** [pnpm](https://pnpm.io/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **UI Components:** [Shadcn UI](https://ui.shadcn.com/)
+*   **Math Library:** [Math.js](https://mathjs.org/)
+
+### Quick Start
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/Knowckx/text-calcer.git
+    cd text-calcer
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    pnpm install
+    ```
+
+3.  **Run the development server:**
+
+    ```bash
+    pnpm dev
+    ```
+
+    This will start the development server, usually on `http://localhost:3000`. Open this URL in your browser to view the application.
+
+4.  **Local deployment, supporting PWA application installation:**
+
+    ```bash
+    pnpm run build
+    pnpm preview --host
+    ```
+
+5.  **Docker deployment:**
+
+    ```bash
+    docker build -t text-calcer .
+    docker run --rm -p 8080:80 text-calcer
+    ```
+
+    Or use Docker Compose:
+
+    ```bash
+    docker compose up --build
+    ```
+
+    Then open `http://localhost:8080`.
+
+### Contributing
+
+Fork/Star are welcome.
+
+If you find any bugs or have suggestions for improvement, please submit an issue or pull request.
+
+### License
+
+This project is licensed under the [GPL3 License](LICENSE).
+
+---

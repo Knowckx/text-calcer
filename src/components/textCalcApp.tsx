@@ -55,7 +55,9 @@ export function TextCalcApp() {
         textareaRef.current?.focus();
     };
 
-    const matchesShortcut = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const matchesShortcut = (
+        event: Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'shiftKey' | 'altKey' | 'metaKey'>,
+    ) => {
         const shortcut = Configs.ClearWorkspaceShortcut.trim().toLowerCase();
         const tokens = shortcut
             .split('+')
@@ -76,8 +78,8 @@ export function TextCalcApp() {
         );
     };
 
-    const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (event.nativeEvent.isComposing) return;
+    const handleWindowKeyDown = (event: KeyboardEvent) => {
+        if (event.isComposing) return;
         if (!matchesShortcut(event)) return;
 
         event.preventDefault();
@@ -105,6 +107,14 @@ export function TextCalcApp() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleWindowKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleWindowKeyDown);
+        };
+    }, [handleWindowKeyDown]);
 
     useEffect(() => {
         setLines((prev) => {
@@ -227,7 +237,6 @@ export function TextCalcApp() {
                             ref={textareaRef}
                             value={lines.input}
                             onChange={(e) => handleInputChange(e.target.value)}
-                            onKeyDown={handleEditorKeyDown}
                             placeholder={messages.placeholders.formula}
                             className="min-h-[min(72vh,960px)] flex-1 rounded-2xl border-slate-200 bg-white/95 p-4 font-mono text-[18px] leading-8 text-slate-900 shadow-inner shadow-slate-100/70 placeholder:text-slate-400 md:text-xl"
                         />
