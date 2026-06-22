@@ -16,6 +16,7 @@
 
 ### 功能更新日志
 
+- 2026-06-22：增加输出结果小数位控制，支持 `0~8` 位显示精度并保存到本地
 - 2026-05-22：修复了快捷键绑定的问题
 
 ### 基于文本的计算器（带方程求解）
@@ -45,6 +46,9 @@
 **2026-04 增加语言切换**  
 可以在页面顶部切换中文和英文，语言选择会保存在本地，下次打开页面会自动恢复。
 
+**2026-06 增加输出小数位控制**  
+可以在页面顶部选择结果显示的小数位，范围为 `0~8`。该设置只影响显示，不影响实际计算，并会保存在本地。普通结果、方程结果和百分比展示都会共用这套精度规则。
+
 ### 功能特性
 *   **基础算术：** 执行加法、减法、乘法、除法和其他标准数学运算。
 *   **乘法符号：** 可以选择你喜欢的乘法符号，为了更好的markdown兼容性，字符'x'和字符'\*'都会被视为乘法符号. "2*3=6"等价于"2x3=6".
@@ -52,7 +56,8 @@
 *   **注释支持：** 允许用户使用 `#` 符号向其计算添加注释。 `#` 后面的部分将被视为注释，并在计算过程中被忽略。
 *   **清屏功能：** 点击 `清屏` 按钮或按下 `Ctrl + Shift + K`，可重置编辑器、结果和缓存输入。
 *   **中英文切换：** 可以在页面顶部切换中文和英文，语言选择会保存在本地并自动恢复。
-*   **格式化输出：** 以用户友好的方式显示数字。格式化输出， 除法值显示百分比。
+*   **小数位控制：** 可自定义结果显示的小数位，范围 `0~8`，采用“最多保留 N 位小数”的规则，并保存到本地。
+*   **格式化输出：** 以用户友好的方式显示数字，自动去除多余尾零；除法值可显示百分比，且百分比与普通结果共用同一显示精度。
 *   **缓存输入内容：** 缓存用户输入的内容 下次打开网页时进行复原
 *   **PWA支持：** 使用Https部署后可以通过PWA安装到本地应用
 *   **云服务商pages部署：** 支持各种服务商的pages静态部署
@@ -135,6 +140,7 @@
 
 ### Change Log
 
+- 2026-06-22: Added output decimal-place control with `0-8` display precision and local persistence
 - 2026-05-22: Fixed the shortcut binding issue
 
 ### Text-based Calculator (with Equation Solver)
@@ -161,6 +167,9 @@ Use the `Clear` button or press `Ctrl + Shift + K` while the editor is focused t
 **2026-04: Language Switcher**  
 Switch between Chinese and English from the top bar. Your selection is remembered locally and restored on the next visit.
 
+**2026-06: Decimal Display Control**  
+Choose the number of displayed decimal places from the top bar, with a range of `0-8`. This affects display only, not the actual calculation, and is stored locally. Standard results, equation results, and percentage display all follow the same precision rule.
+
 ### Features
 *   **Basic Arithmetic:** Performs addition, subtraction, multiplication, division, and other standard mathematical operations.  
 *   **Multiplication symbols:** For better **markdown** file compatibility, You can choose the multiplication symbol you like. "2*3=6" is equals to "2x3=6".
@@ -169,7 +178,8 @@ Switch between Chinese and English from the top bar. Your selection is remembere
 *   **Clear Workspace:** Use the `Clear` button or `Ctrl + Shift + K` to reset the editor, results, and cached input.
 *   **Internationalization:** Switch between Chinese and English from the top bar. The app remembers your language choice locally.
 *   **Responsive Design:** Adapts to different screen sizes using a two-column layout.
-*   **Formatted Output:** Displays numbers in a user-friendly way. Formats the output, displaying percentages if the value is too small.
+*   **Decimal Display Control:** Customize displayed decimal places from `0` to `8`, using a “keep up to N decimal places” rule, with local persistence.
+*   **Formatted Output:** Displays numbers in a user-friendly way, removes unnecessary trailing zeros, and applies the same precision rule to percentage display.
 *   **Input Caching:** Caches the user's input.  Restores the input when the webpage is opened next time.
 *   **PWA Support:**  After deployment using Https, it can be installed as a local application through PWA.
 *   **Cloud Provider Pages Deployment:** Supports static deployment on various service providers' pages.

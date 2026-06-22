@@ -12,6 +12,9 @@ const enUS = {
     copiedLine: 'Copied',
     language: 'Language',
   },
+  settings: {
+    decimalPlaces: 'Decimals',
+  },
   titles: {
     input: 'Input',
     result: 'Result',

@@ -11,14 +11,39 @@ import { getLocaleUrl } from '@/lib/site';
 import { syncSeoHead } from '@/lib/seo';
 
 const APP_TITLE = 'Text Calculator';
+const DECIMAL_PLACES_STORAGE_KEY = 'text-calcer-decimal-places';
+const MIN_DECIMAL_PLACES = 0;
+const MAX_DECIMAL_PLACES = 8;
+const DECIMAL_PLACE_OPTIONS = Array.from(
+    { length: MAX_DECIMAL_PLACES - MIN_DECIMAL_PLACES + 1 },
+    (_, index) => index + MIN_DECIMAL_PLACES,
+);
+
+function clampDecimalPlaces(value: number): number {
+    return Math.min(MAX_DECIMAL_PLACES, Math.max(MIN_DECIMAL_PLACES, value));
+}
+
+function readStoredDecimalPlaces(): number {
+    try {
+        const savedValue = localStorage.getItem(DECIMAL_PLACES_STORAGE_KEY);
+        const parsedValue = Number.parseInt(savedValue ?? '', 10);
+        if (Number.isNaN(parsedValue)) {
+            return 4;
+        }
+        return clampDecimalPlaces(parsedValue);
+    } catch {
+        return 4;
+    }
+}
 
 export function TextCalcApp() {
     const { locale, messages } = useI18n();
+    const [decimalPlaces, setDecimalPlaces] = useState<number>(() => readStoredDecimalPlaces());
     const [lines, setLines] = useState<{ input: string; result: string[] }>(() => {
         const savedInput = localStorage.getItem('calcInput') || '';
         return {
             input: savedInput,
-            result: savedInput !== '' ? calculateResults(savedInput, messages, locale) : []
+            result: savedInput !== '' ? calculateResults(savedInput, messages, locale, decimalPlaces) : []
         };
     });
     const [copiedLineIndex, setCopiedLineIndex] = useState<number | null>(null);
@@ -29,9 +54,16 @@ export function TextCalcApp() {
     const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleInputChange = (value: string) => {
-        const resArray = calculateResults(value, messages, locale)
+        const resArray = calculateResults(value, messages, locale, decimalPlaces)
         setLines({ input: value, result: resArray });
         localStorage.setItem('calcInput', value);
+    };
+
+    const handleDecimalPlacesChange = (value: string) => {
+        const parsedValue = Number.parseInt(value, 10);
+        const nextValue = clampDecimalPlaces(Number.isNaN(parsedValue) ? 4 : parsedValue);
+        setDecimalPlaces(nextValue);
+        localStorage.setItem(DECIMAL_PLACES_STORAGE_KEY, String(nextValue));
     };
 
     const showNotice = (message: string) => {
@@ -124,10 +156,10 @@ export function TextCalcApp() {
 
             return {
                 ...prev,
-                result: calculateResults(prev.input, messages, locale),
+                result: calculateResults(prev.input, messages, locale, decimalPlaces),
             };
         });
-    }, [locale, messages]);
+    }, [decimalPlaces, locale, messages]);
 
     useEffect(() => {
         syncSeoHead({
@@ -211,6 +243,23 @@ export function TextCalcApp() {
                                         </div>
                                     ) : null}
                                 </div>
+                                <label className="inline-flex h-8 items-center gap-2 rounded-full border border-slate-300 bg-white/90 px-3 text-sm text-slate-700 shadow-sm">
+                                    <span className="whitespace-nowrap font-medium text-slate-600">
+                                        {messages.settings.decimalPlaces}
+                                    </span>
+                                    <select
+                                        value={decimalPlaces}
+                                        onChange={(e) => handleDecimalPlacesChange(e.target.value)}
+                                        className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm font-medium text-slate-800 outline-none"
+                                        aria-label={messages.settings.decimalPlaces}
+                                    >
+                                        {DECIMAL_PLACE_OPTIONS.map((option) => (
+                                            <option key={option} value={option}>
+                                                {option}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -331,7 +380,7 @@ export function TextCalcApp() {
 }
 
 // --- 5. 修改计算函数: 返回 string[] 而不是 string ---
-const calculateResults = (value: string, messages: Messages, locale: Locale): string[] => {
+const calculateResults = (value: string, messages: Messages, locale: Locale, decimalPlaces: number): string[] => {
 
     if (value === '') {
         return [];
@@ -354,7 +403,7 @@ const calculateResults = (value: string, messages: Messages, locale: Locale): st
             resultLines.push(lineWithoutComment);
             continue;
         }
-        let result = GetLineNoCommentResult(lineWithoutComment, messages, locale);
+        let result = GetLineNoCommentResult(lineWithoutComment, messages, locale, decimalPlaces);
         if (comment) {
             result += `    # ${comment}`;
         }
@@ -366,13 +415,13 @@ const calculateResults = (value: string, messages: Messages, locale: Locale): st
 
 
 
-function formatEvalResultNumber(evalResult: number, needPercent: boolean, locale: Locale): string {
+function formatEvalResultNumber(evalResult: number, needPercent: boolean, locale: Locale, decimalPlaces: number): string {
     if (Number.isInteger(evalResult)) {
         return new Intl.NumberFormat(locale, { maximumFractionDigits: 0, useGrouping: false }).format(evalResult);
     }
 
     const res = new Intl.NumberFormat(locale, {
-        maximumFractionDigits: 4,
+        maximumFractionDigits: decimalPlaces,
         useGrouping: false,
     }).format(evalResult);
 
@@ -380,9 +429,8 @@ function formatEvalResultNumber(evalResult: number, needPercent: boolean, locale
     if (Configs.ShowNumPercentDetail){  // 通过配置开启或者关闭
         if (needPercent && evalResult < 1.3 && evalResult > 0.7) {
             const percent = new Intl.NumberFormat(locale, {
-                maximumFractionDigits: 2,
+                maximumFractionDigits: decimalPlaces,
                 useGrouping: false,
-                signDisplay: 'always',
             }).format(evalResult * 100 - 100);
             return `${res} (${percent}%)`;
         }
@@ -390,9 +438,9 @@ function formatEvalResultNumber(evalResult: number, needPercent: boolean, locale
     return res
 }
 
-function formatEvalResult(evalResult: MathType, needPercent: boolean, locale: Locale): string {
+function formatEvalResult(evalResult: MathType, needPercent: boolean, locale: Locale, decimalPlaces: number): string {
     if (typeof evalResult === 'number') {
-        return formatEvalResultNumber(evalResult, needPercent, locale)
+        return formatEvalResultNumber(evalResult, needPercent, locale, decimalPlaces)
     } else if (typeof evalResult === 'string') {
         return evalResult;
     } else if (evalResult && typeof evalResult === 'object' && 'type' in evalResult) {
@@ -425,14 +473,14 @@ function HandleOneLine(line: string) {
 }
 
 
-function GetLineNoCommentResult(inpLine: string, messages: Messages, locale: Locale) {
+function GetLineNoCommentResult(inpLine: string, messages: Messages, locale: Locale, decimalPlaces: number) {
     let result = '';
     // --- 创建一个仅用于计算的副本，将 x 替换为 * ---
     const lineForCalc = inpLine.replaceAll('x', '*');
 
     if (inpLine.includes('a') && inpLine.includes('=')) {
         try { // 尝试解方程
-            result = solveEquation(lineForCalc, messages);
+            result = solveEquation(lineForCalc, messages, locale, decimalPlaces);
             result = `${messages.calculations.equationPrefix}${result}`;
         } catch {
             //如果solveEquation内部出错, 也不影响下面逻辑执行
@@ -444,7 +492,7 @@ function GetLineNoCommentResult(inpLine: string, messages: Messages, locale: Loc
     try {
         const needPercent = lineForCalc.includes('/') ? true : false
         const evalResult = evaluate(lineForCalc);
-        const formattedResult = formatEvalResult(evalResult, needPercent, locale);
+        const formattedResult = formatEvalResult(evalResult, needPercent, locale, decimalPlaces);
         result = `${inpLine} = ${formattedResult}`; 
     } catch {
         result = `${inpLine}`;
@@ -454,7 +502,7 @@ function GetLineNoCommentResult(inpLine: string, messages: Messages, locale: Loc
 
 
 /** 输入一个一元一次方程 x表示需要求解的变量 */
-function solveEquation(equation: string, messages: Messages): string {
+function solveEquation(equation: string, messages: Messages, locale: Locale, decimalPlaces: number): string {
     // 将方程以"="拆分为左右两部分
     const parts = equation.split('=');
     if (parts.length !== 2) {
@@ -483,15 +531,5 @@ function solveEquation(equation: string, messages: Messages): string {
 
     // 求解 f(a) = 0 => a = -f(0) / coeff
     const result = -f0 / coeff;
-    // 如果结果是小数，保留4位小数
-    const resultStr = result.toString();
-
-    // 如果存在小数点，且小数位数大于4位，则格式化为保留4位小数
-    if (resultStr.includes('.')) {
-        const fractionalPart = resultStr.split('.')[1];
-        if (fractionalPart.length > 4) {
-            return result.toFixed(4);
-        }
-    }
-    return resultStr;
+    return formatEvalResultNumber(result, false, locale, decimalPlaces);
 }

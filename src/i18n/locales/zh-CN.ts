@@ -12,6 +12,9 @@ const zhCN = {
     copiedLine: '已复制',
     language: '语言',
   },
+  settings: {
+    decimalPlaces: '小数位',
+  },
   titles: {
     input: '输入',
     result: '结果',

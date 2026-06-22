@@ -12,6 +12,9 @@ export interface Messages {
     copiedLine: string;
     language: string;
   };
+  settings: {
+    decimalPlaces: string;
+  };
   titles: {
     input: string;
     result: string;
@@ -57,6 +60,7 @@ export type MessageKey =
   | 'actions.copyLine'
   | 'actions.copiedLine'
   | 'actions.language'
+  | 'settings.decimalPlaces'
   | 'titles.input'
   | 'titles.result'
   | 'titles.quickTips'
