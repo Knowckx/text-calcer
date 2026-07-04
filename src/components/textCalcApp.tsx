@@ -208,7 +208,7 @@ export function TextCalcApp() {
                         <div className="flex flex-wrap items-center gap-2">
                             <div className="flex flex-wrap items-center gap-2">
                                 <a
-                                    href="https://blog.knowckx.top/"
+                                    href="https://blog.knowckx.de/"
                                     target="_blank"
                                     rel="noopener"
                                     className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-50/90 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900"

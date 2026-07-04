@@ -29,7 +29,7 @@
 
 ### 在线例子
 
-我在`EdgeOne`上部署了一个纯静态页面，[text-calcer URL](https://text-calcer.knowckx.top/)，可以直接使用
+我在`cloudflare`上部署了一个纯静态页面，[text-calcer URL](https://text-calcer.knowckx.de/)，可以直接使用
 
 
 ![desc](images/demo-calc.png)
@@ -108,6 +108,8 @@
     pnpm preview --host
     ```
 
+    如果你只需要构建好的静态文件，可以直接使用 `gh-pages` 分支。该分支由 GitHub Actions 自动构建并发布 `dist` 内容，无需在本地手动构建。
+
 5.  **Docker 部署:**
 
     ```bash
@@ -153,7 +155,7 @@ The project is built using React, TypeScript, Vite, pnpm, Tailwind CSS, and Shad
 
 ### Example
 
-A demo page deployed -> [Demo URL](https://text-calcer.knowckx.top/)
+A demo page deployed -> [Demo URL](https://text-calcer.knowckx.de/)
 
 ![desc](images/demo-calc.png)
 
@@ -224,6 +226,8 @@ Choose the number of displayed decimal places from the top bar, with a range of 
     pnpm run build
     pnpm preview --host
     ```
+
+    If you only need the built static files, use the `gh-pages` branch directly. GitHub Actions automatically builds and publishes the `dist` output there, so no manual local build is required.
 
 5.  **Docker deployment:**
 

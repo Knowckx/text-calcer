@@ -47,7 +47,7 @@
   - `ShowNumPercentDetail: true`
   - `ClearWorkspaceShortcut: 'ctrl+shift+k'`
 - `src/config/site.ts`
-  - `siteUrl: 'https://text-calcer.knowckx.top'`
+  - `siteUrl: 'https://text-calcer.knowckx.de'`
   - `bingVerifyCode` 已配置
 
 ## 当前计算流程

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://text-calcer.knowckx.top/sitemap.xml
+Sitemap: https://text-calcer.knowckx.de/sitemap.xml
