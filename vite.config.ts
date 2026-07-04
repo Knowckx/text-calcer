@@ -6,44 +6,42 @@ import path from "path"
 import tailwindcss from '@tailwindcss/vite'
 import { siteConfig } from './src/config/site'
 
-export default defineConfig({
-    plugins: [
-        react(), mkcert(), tailwindcss(),
-        {
-            name: 'inject-bing-site-verification',
-            transformIndexHtml(html) {
-                if (!siteConfig.bingVerifyCode) {
-                    return html
-                }
+import { cloudflare } from "@cloudflare/vite-plugin";
 
-                return html.replace(
-                    '</head>',
-                    `    <meta name="msvalidate.01" content="${siteConfig.bingVerifyCode}" />\n  </head>`,
-                )
-            },
+export default defineConfig({
+    plugins: [react(), mkcert(), tailwindcss(), {
+        name: 'inject-bing-site-verification',
+        transformIndexHtml(html) {
+            if (!siteConfig.bingVerifyCode) {
+                return html
+            }
+
+            return html.replace(
+                '</head>',
+                `    <meta name="msvalidate.01" content="${siteConfig.bingVerifyCode}" />\n  </head>`,
+            )
         },
-        VitePWA({
-            registerType: 'autoUpdate',
-            includeAssets: ['pwa-512x512.png'], // 添加图标到缓存
-            workbox: {
-                globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,gif,svg,woff,woff2}'] // 缓存所有常见的静态资源
-            },
-            manifest: {
-                name: 'text-calcer',
-                short_name: 'text-calcer',
-                description: 'Description',
-                theme_color: '#ffffff',
-                // orientation: "landscape-primary", // 优先横屏
-                icons: [
-                    {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                    }
-                ],
-            },
-        })
-    ],
+    }, VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['pwa-512x512.png'], // 添加图标到缓存
+        workbox: {
+            globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,gif,svg,woff,woff2}'] // 缓存所有常见的静态资源
+        },
+        manifest: {
+            name: 'text-calcer',
+            short_name: 'text-calcer',
+            description: 'Description',
+            theme_color: '#ffffff',
+            // orientation: "landscape-primary", // 优先横屏
+            icons: [
+                {
+                    src: 'pwa-512x512.png',
+                    sizes: '512x512',
+                    type: 'image/png',
+                }
+            ],
+        },
+    }), cloudflare()],
     base: '/',
     resolve: {
         alias: {
